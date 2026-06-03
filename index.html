@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A/B Testing Dashboard - Evaluasi Efektivitas Kampanye Pemasaran Digital">
+    <title>Analisa Bisnis Sains Data | A/B Testing Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css?v=4">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Memuat Data Eksperimen A/B Testing...</div>
+    </div>
+
+    <!-- MAIN DASHBOARD CONTAINER -->
+    <div class="dashboard-container">
+        
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke="#f59e0b" stroke-width="2.5"/>
+                        <circle cx="12" cy="12" r="5" fill="#f59e0b"/>
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="#1e3a8a"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h2>ANALISA BISNIS</h2>
+                    <h3>SAINS DATA</h3>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Dashboard</div>
+                <ul class="nav-list">
+                    <li>
+                        <a href="#overview" class="nav-item active" data-tab="overview" id="nav-overview">
+                            <span class="nav-icon">🏠</span>
+                            <span class="nav-label">Overview</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="nav-section-label">Experiment</div>
+                <ul class="nav-list">
+                    <li>
+                        <a href="#setup" class="nav-item" data-tab="setup" id="nav-setup">
+                            <span class="nav-icon">⚗️</span>
+                            <span class="nav-label">A/B Setup</span>
+                            <span class="badge badge-treatment" style="margin-left:auto; font-size: 9px; padding: 2px 5px;">NEW</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#testing" class="nav-item" data-tab="testing" id="nav-testing">
+                            <span class="nav-icon">📐</span>
+                            <span class="nav-label">Statistical Test</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="nav-section-label">Analysis</div>
+                <ul class="nav-list">
+                    <li>
+                        <a href="#eda" class="nav-item" data-tab="eda" id="nav-eda">
+                            <span class="nav-icon">🔍</span>
+                            <span class="nav-label">EDA</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#insights" class="nav-item" data-tab="insights" id="nav-insights">
+                            <span class="nav-icon">💡</span>
+                            <span class="nav-label">Business Insights</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-footer">
+                    <ul class="nav-list">
+                        <li>
+                            <a href="#" class="nav-item" id="btn-logout">
+                                <span class="nav-icon">🚪</span>
+                                <span class="nav-label">Log Out</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-item" id="btn-help">
+                                <span class="nav-icon">❓</span>
+                                <span class="nav-label">Help</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT CANVAS -->
+        <main class="main-content">
+            
+            <!-- TOP BAR -->
+            <header class="top-bar">
+                <div>
+                    <div style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main);">Dashboard Analitik A/B Testing Kampanye Digital Marketing</div>
+                    <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 0.15rem;">Sumber: GitHub · Digital Marketing Campaign Dataset (8.000 records)</div>
+                </div>
+                
+                <div class="top-bar-right">
+                    <div class="group-info">
+                        <span class="group-name">KELOMPOK 6</span>
+                        <span class="group-sub">A / B TESTING</span>
+                    </div>
+                    <div class="institution-logos">
+                        <div class="logo-emblem emblem-pens">PENS</div>
+                        <div class="logo-emblem emblem-sdt">SDT</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB CONTENT PAGES -->
+            <div class="content-body">
+                
+                <!-- ==================== PAGE: OVERVIEW ==================== -->
+                <section id="page-overview" class="page-content active">
+                    <div class="tab-header">
+                        <h1>Overview Dataset</h1>
+                        <h2>Ringkasan keseluruhan performa kampanye digital marketing dari 8.000 records pelanggan</h2>
+                    </div>
+
+                    <!-- KPI Cards -->
+                    <div class="kpi-grid" id="kpiGrid"></div>
+
+                    <!-- Charts Row 1 -->
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-title">📊 Distribusi Campaign Channel</div>
+                            <div class="chart-wrap"><canvas id="chartChannelDist"></canvas></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">✅ Conversion Rate per Channel</div>
+                            <div class="chart-wrap"><canvas id="chartChannelCR"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row 2 -->
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-title">💰 Rata-rata Ad Spend per Channel</div>
+                            <div class="chart-wrap"><canvas id="chartAdSpend"></canvas></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">🖱️ Click-Through Rate (CTR) per Channel</div>
+                            <div class="chart-wrap"><canvas id="chartCTR"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Campaign Type -->
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-title">🎯 Distribusi Campaign Type</div>
+                            <div class="chart-wrap"><canvas id="chartTypeDist"></canvas></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">💹 Conversion Rate per Campaign Type</div>
+                            <div class="chart-wrap"><canvas id="chartTypeCR"></canvas></div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ==================== PAGE: A/B SETUP ==================== -->
+                <section id="page-setup" class="page-content">
+                    <div class="tab-header">
+                        <h1>A/B Experiment Setup</h1>
+                        <h2>Definisikan Variabel Kontrol dan Treatment, lakukan random sampling untuk mengurangi bias karakteristik user</h2>
+                    </div>
+
+                    <!-- Narasi Eksperimen -->
+                    <div class="card" style="margin-bottom:24px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(168, 85, 247, 0.05)); border-color: rgba(59, 130, 246, 0.2);">
+                        <div style="display:flex; gap:14px; align-items:flex-start;">
+                            <div style="font-size:24px; flex-shrink:0;">📋</div>
+                            <div>
+                                <div style="font-size:13px; font-weight:700; color:var(--color-accent-blue); margin-bottom:6px;">Skenario Eksperimen</div>
+                                <div style="font-size:13.5px; color:var(--color-text-muted); line-height:1.7;">
+                                    Perusahaan ingin menguji efektivitas dua <strong style="color:var(--color-text-main)">campaign channel</strong> yang berbeda.
+                                    <strong style="color:var(--color-accent-blue)">Variabel Kontrol (A)</strong> adalah channel eksisting yang sudah berjalan,
+                                    sedangkan <strong style="color:#a855f7">Variabel Treatment (B)</strong> adalah channel alternatif/baru yang ingin diuji.
+                                    Random sampling dilakukan untuk memastikan karakteristik user di kedua grup setara dan mengurangi bias.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Setup Cards -->
+                    <div class="ab-setup-grid">
+                        <!-- Control -->
+                        <div class="group-card control">
+                            <div class="group-label control"><div class="group-dot control"></div>Grup A — Kontrol (Existing)</div>
+                            <label class="form-label" style="display: block; font-size: 11px; font-weight: 600; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Pilih Campaign Channel</label>
+                            <select id="selectControl" onchange="onSetupChange()">
+                                <option value="ppc">PPC (Pay-Per-Click)</option>
+                                <option value="referral">Referral</option>
+                                <option value="email">Email Marketing</option>
+                                <option value="seo">SEO</option>
+                                <option value="social media">Social Media</option>
+                            </select>
+                            <div class="sample-info" id="controlInfo">
+                                <span>Total users tersedia:</span>
+                                <strong id="controlTotal">—</strong>
+                            </div>
+                        </div>
+                        <!-- Treatment -->
+                        <div class="group-card treatment">
+                            <div class="group-label treatment"><div class="group-dot treatment"></div>Grup B — Treatment (Alternatif)</div>
+                            <label class="form-label" style="display: block; font-size: 11px; font-weight: 600; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Pilih Campaign Channel</label>
+                            <select id="selectTreatment" onchange="onSetupChange()">
+                                <option value="referral">Referral</option>
+                                <option value="ppc">PPC (Pay-Per-Click)</option>
+                                <option value="email">Email Marketing</option>
+                                <option value="seo">SEO</option>
+                                <option value="social media">Social Media</option>
+                            </select>
+                            <div class="sample-info" id="treatmentInfo">
+                                <span>Total users tersedia:</span>
+                                <strong id="treatmentTotal">—</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sample Size -->
+                    <div class="card" style="margin-bottom:24px;">
+                        <div class="card-title">🎲 Random Sampling Configuration</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:center;">
+                            <div>
+                                <label class="form-label" style="display: block; font-size: 11px; font-weight: 600; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Ukuran Sampel per Grup: <strong id="sampleSizeLabel" style="color:var(--color-accent-blue);">500</strong></label>
+                                <input type="range" id="sampleSizeRange" min="100" max="800" value="500" step="50" oninput="onSampleSizeChange()" />
+                                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--color-text-muted);margin-top:4px;">
+                                    <span>100</span><span>800</span>
+                                </div>
+                                <div style="margin-top:12px; font-size:13px; color:var(--color-text-muted); line-height:1.6; background: #f8fafc; border:1px solid var(--color-border); border-radius:8px; padding:12px 14px;">
+                                    💡 <strong style="color:var(--color-text-main);">Mengapa Random Sampling?</strong><br/>
+                                    User Referral cenderung memiliki trust lebih tinggi (dari rekomendasi teman), sedangkan user PPC datang dari iklan berbayar dengan niat beli yang berbeda.
+                                    Randomisasi memastikan kedua grup memiliki komposisi yang sebanding sehingga perbedaan performa benar-benar mencerminkan efek channel, bukan karakteristik user.
+                                </div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div class="sample-counter" id="sampleCounterA" style="font-size: 32px; font-weight: 800; color: var(--color-text-main);">500</div>
+                                <div class="sample-counter-label" style="font-size: 11px; color: var(--color-text-muted); text-transform: uppercase;">sampel Grup A</div>
+                                <div style="margin:10px 0;color:var(--color-text-muted);font-size:18px;">+</div>
+                                <div class="sample-counter" id="sampleCounterB" style="font-size: 32px; font-weight: 800; color: var(--color-text-main);">500</div>
+                                <div class="sample-counter-label" style="font-size: 11px; color: var(--color-text-muted); text-transform: uppercase;">sampel Grup B</div>
+                                <div class="divider" style="margin:14px 0;"></div>
+                                <div style="font-size:20px; font-weight:800; color:var(--color-text-main);" id="totalSampleCounter">1.000</div>
+                                <div class="sample-counter-label" style="font-size: 11px; color: var(--color-text-muted); text-transform: uppercase;">Total Sampel Eksperimen</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Run Button -->
+                    <div style="display:flex; gap:12px; margin-bottom:24px;">
+                        <button class="btn btn-primary" onclick="runSampling()" id="btnRunSampling">
+                            <span>🎲</span> Jalankan Random Sampling
+                        </button>
+                        <button class="btn btn-ghost" onclick="resetSampling()">
+                            ↺ Reset
+                        </button>
+                    </div>
+
+                    <!-- Results -->
+                    <div id="samplingResults" style="display:none;">
+                        <div style="margin-bottom:16px; display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:14px; font-weight:700; color:var(--color-text-main);">Hasil Random Sampling</span>
+                            <span class="tag green">✓ Selesai</span>
+                            <span style="font-size:12px; color:var(--color-text-muted);" id="samplingTimestamp"></span>
+                        </div>
+                        <div class="grid-2">
+                            <div class="card">
+                                <div class="card-title">📋 Ringkasan Sampel per Grup</div>
+                                <table class="metrics-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Metrik</th>
+                                            <th>Grup A (Kontrol)</th>
+                                            <th>Grup B (Treatment)</th>
+                                            <th>Selisih</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="samplingTableBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="card">
+                                <div class="card-title">📊 Perbandingan Conversion Rate</div>
+                                <div class="chart-wrap"><canvas id="chartSamplingCR"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="card">
+                                <div class="card-title">💰 Rata-rata Ad Spend (Sampel)</div>
+                                <div class="chart-wrap-sm"><canvas id="chartSamplingSpend"></canvas></div>
+                            </div>
+                            <div class="card">
+                                <div class="card-title">🖱️ Click-Through Rate (Sampel)</div>
+                                <div class="chart-wrap-sm"><canvas id="chartSamplingCTR"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="card" style="background:linear-gradient(135deg,rgba(59, 130, 246, 0.04),rgba(168, 85, 247, 0.04)); border-color:rgba(59, 130, 246, 0.15);">
+                            <div class="card-title">📝 Narasi Eksperimen Otomatis</div>
+                            <div id="experimentNarrative" style="font-size:13.5px; color:var(--color-text-muted); line-height:1.8;"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== PAGE: STATISTICAL TEST ==================== -->
+                <section id="page-testing" class="page-content">
+                    <div class="tab-header">
+                        <h1>Statistical Testing</h1>
+                        <h2>Uji hipotesis menggunakan Z-Test for Proportions untuk menentukan signifikansi perbedaan antar grup</h2>
+                    </div>
+
+                    <div id="noSamplingWarning" class="card" style="background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.3);margin-bottom:24px;">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <span style="font-size:20px;">⚠️</span>
+                            <div>
+                                <div style="font-weight:700; margin-bottom:4px; color:var(--color-accent-amber);">Belum Ada Data Sampling</div>
+                                <div style="font-size:13px;color:var(--color-text-muted);">Silakan jalankan Random Sampling di halaman <strong style="color:var(--color-accent-amber)">A/B Setup</strong> terlebih dahulu sebelum melihat hasil uji statistik.</div>
+                            </div>
+                            <button class="btn btn-ghost" style="margin-left:auto;flex-shrink:0;" onclick="navigate('setup')">→ Ke A/B Setup</button>
+                        </div>
+                    </div>
+
+                    <div id="testingContent" style="display:none;">
+                        <!-- Hypothesis -->
+                        <div class="hypothesis-box">
+                            <div class="h-title">🔬 Perumusan Hipotesis (Z-Test for Proportions, α = 0.05)</div>
+                            <div class="hypothesis-item">
+                                <div class="h-tag h0">H₀</div>
+                                <div class="h-text" id="h0Text">Tidak ada perbedaan signifikan antara Conversion Rate Grup A dan Grup B (p_A = p_B)</div>
+                            </div>
+                            <div class="hypothesis-item">
+                                <div class="h-tag h1">H₁</div>
+                                <div class="h-text" id="h1Text">Terdapat perbedaan signifikan antara Conversion Rate Grup A dan Grup B (p_A ≠ p_B) (two-tailed, α = 0.05)</div>
+                            </div>
+                        </div>
+
+                        <!-- Result Cards -->
+                        <div class="result-cards">
+                            <div class="result-card">
+                                <div class="rc-label">Z-Score</div>
+                                <div class="rc-value info" id="rcZScore">—</div>
+                                <div class="rc-sub">Nilai uji statistik</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="rc-label">P-Value</div>
+                                <div class="rc-value" id="rcPValue">—</div>
+                                <div class="rc-sub">Two-tailed</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="rc-label">95% CI (Selisih)</div>
+                                <div class="rc-value info" id="rcCI" style="font-size:14px;margin-top:6px;">—</div>
+                                <div class="rc-sub">Confidence Interval</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="rc-label">Effect Size</div>
+                                <div class="rc-value" id="rcEffect">—</div>
+                                <div class="rc-sub">Cohen's h</div>
+                            </div>
+                        </div>
+
+                        <!-- Conclusion -->
+                        <div class="conclusion-box" id="conclusionBox">
+                            <div class="conclusion-icon" id="conclusionIcon">—</div>
+                            <div>
+                                <div class="conclusion-title" id="conclusionTitle">Menghitung...</div>
+                                <div class="conclusion-text" id="conclusionText">—</div>
+                            </div>
+                        </div>
+
+                        <!-- Bell Curve -->
+                        <div class="grid-2">
+                            <div class="card">
+                                <div class="card-title">📈 Distribusi Normal & Z-Score</div>
+                                <div class="chart-wrap"><canvas id="chartBellCurve"></canvas></div>
+                            </div>
+                            <div class="card">
+                                <div class="card-title">🔢 Detail Perhitungan</div>
+                                <table class="metrics-table" id="calcTable">
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- CR Comparison -->
+                        <div class="card" style="margin-top:0;">
+                            <div class="card-title">📊 Perbandingan Conversion Rate Grup A vs Grup B</div>
+                            <div class="chart-wrap"><canvas id="chartTestCR"></canvas></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== PAGE: EDA ==================== -->
+                <section id="page-eda" class="page-content">
+                    <div class="tab-header">
+                        <h1>Exploratory Data Analysis</h1>
+                        <h2>Eksplorasi mendalam distribusi data, korelasi antar fitur, dan pola-pola tersembunyi dalam dataset</h2>
+                    </div>
+
+                    <!-- Row 1 -->
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-title">📊 Histogram Distribusi Usia</div>
+                            <div class="chart-wrap"><canvas id="chartAgeHist"></canvas></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">🎯 Distribusi Target (Conversion)</div>
+                            <div class="chart-wrap"><canvas id="chartConvDist"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-title">💰 Distribusi Ad Spend per Channel (Box Plot)</div>
+                            <div class="chart-wrap"><canvas id="chartBoxSpend"></canvas></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">👥 Conversion Rate berdasarkan Gender</div>
+                            <div class="chart-wrap"><canvas id="chartGenderCR"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Correlation Heatmap -->
+                    <div class="card" style="margin-bottom:24px;">
+                        <div class="card-title">🌡️ Heatmap Korelasi Fitur Utama</div>
+                        <div style="overflow-x:auto;">
+                            <canvas id="chartCorr" style="min-width:700px; height:400px;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Row 3 -->
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-title">📈 Website Visits vs Time on Site per Channel</div>
+                            <div class="chart-wrap"><canvas id="chartVisitsTime"></canvas></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">📧 Email Opens & Clicks per Channel</div>
+                            <div class="chart-wrap"><canvas id="chartEmailEng"></canvas></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== PAGE: INSIGHTS ==================== -->
+                <section id="page-insights" class="page-content">
+                    <div class="tab-header">
+                        <h1>Business Insights & Rekomendasi</h1>
+                        <h2>Temuan analisis, interpretasi, proyeksi, dan rekomendasi strategis berbasis data</h2>
+                    </div>
+
+                    <!-- Top metrics bar -->
+                    <div class="card" style="margin-bottom:24px; background:linear-gradient(135deg,rgba(59, 130, 246, 0.05),rgba(6, 182, 212, 0.05)); border-color:rgba(59, 130, 246, 0.15);">
+                        <div style="display:flex; gap:40px; flex-wrap:wrap; justify-content:space-around; text-align:center; padding:10px 0;">
+                            <div>
+                                <div style="font-size:26px;font-weight:800;color:var(--color-accent-blue);">88.28%</div>
+                                <div style="font-size:12px;color:var(--color-text-muted);">Conversion Rate PPC</div>
+                            </div>
+                            <div>
+                                <div style="font-size:26px;font-weight:800;color:#a855f7;">88.31%</div>
+                                <div style="font-size:12px;color:var(--color-text-muted);">Conversion Rate Referral</div>
+                            </div>
+                            <div>
+                                <div style="font-size:26px;font-weight:800;color:var(--color-success);">87.65%</div>
+                                <div style="font-size:12px;color:var(--color-text-muted);">Overall Conversion Rate</div>
+                            </div>
+                            <div>
+                                <div style="font-size:26px;font-weight:800;color:var(--color-accent-amber);">Rp 40M</div>
+                                <div style="font-size:12px;color:var(--color-text-muted);">Total Ad Spend</div>
+                            </div>
+                            <div>
+                                <div style="font-size:26px;font-weight:800;color:#06b6d4;">15.48%</div>
+                                <div style="font-size:12px;color:var(--color-text-muted);">Avg Click-Through Rate</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4 Insight Quadrants -->
+                    <div class="insights-grid">
+                        <!-- What Happened -->
+                        <div class="insight-card happened">
+                            <div class="insight-eyebrow cyan"><div class="dot"></div>What Happened?</div>
+                            <div class="insight-title">Apa yang Ditemukan?</div>
+                            <div class="insight-body">
+                                Dari 8.000 user yang dianalisis, <strong>7.012 (87,65%)</strong> berhasil melakukan konversi.
+                                <br/><br/>
+                                Channel <strong>Referral (88.31%)</strong> dan <strong>PPC (88.28%)</strong> mencatat conversion rate tertinggi, sementara
+                                <strong>Social Media (86.83%)</strong> adalah yang terendah.
+                                <br/><br/>
+                                Uji statistik Z-Test menunjukkan bahwa perbedaan conversion rate antar channel sangat kecil dan
+                                <strong>tidak signifikan secara statistik</strong> (p-value &gt; 0.05), mengindikasikan semua channel memiliki performa setara.
+                            </div>
+                        </div>
+
+                        <!-- Why -->
+                        <div class="insight-card why">
+                            <div class="insight-eyebrow yellow"><div class="dot"></div>Why Did It Happen?</div>
+                            <div class="insight-title">Mengapa Hal Ini Terjadi?</div>
+                            <div class="insight-body">
+                                <strong>Channel Referral</strong> unggul karena user yang datang via rekomendasi teman atau kolega sudah memiliki
+                                <em>social trust</em> yang lebih tinggi, sehingga barrier untuk konversi lebih rendah.
+                                <br/><br/>
+                                <strong>PPC</strong> memiliki performa tinggi karena targeting iklan yang tepat sasaran — user yang melihat iklan sudah memiliki
+                                <em>purchase intent</em> yang jelas.
+                                <br/><br/>
+                                <strong>Social Media</strong> sedikit lebih rendah karena audiensnya lebih luas dan tidak selalu berada dalam fase pembelian.
+                                Konten bersifat awareness, bukan langsung konversi.
+                            </div>
+                        </div>
+
+                        <!-- What Will Happen -->
+                        <div class="insight-card predict">
+                            <div class="insight-eyebrow purple"><div class="dot"></div>What Will Happen?</div>
+                            <div class="insight-title">Prediksi ke Depan</div>
+                            <div class="insight-body">
+                                Berdasarkan tren data historis dan pola yang ada:
+                                <br/><br/>
+                                • <strong>Referral</strong> akan terus menjadi channel dengan ROI terbaik jika program insentif referral diperkuat.<br/>
+                                • <strong>PPC</strong> akan tetap efektif namun biaya per konversi berpotensi meningkat seiring naiknya kompetisi iklan.<br/>
+                                • <strong>Social Media</strong> memiliki potensi besar jika dikombinasikan dengan konten <em>retargeting</em> dan <em>lookalike audience</em>.<br/>
+                                • Jika anggaran dipindahkan dari Email ke Referral, prediksi peningkatan conversion rate sebesar <strong>1.3-2.5%</strong>.
+                            </div>
+                        </div>
+
+                        <!-- Recommendation -->
+                        <div class="insight-card recommend">
+                            <div class="insight-eyebrow green"><div class="dot"></div>What Should Be Done?</div>
+                            <div class="insight-title">Rekomendasi Bisnis</div>
+                            <div class="insight-body">
+                                <ul class="rec-list">
+                                    <li><div class="rec-num">1</div><div>Tingkatkan anggaran channel <strong>Referral</strong> — buat program reward/insentif untuk user yang berhasil mengajak teman.</div></li>
+                                    <li><div class="rec-num">2</div><div>Optimalkan kampanye <strong>PPC</strong> dengan A/B testing pada variasi copy iklan dan landing page untuk menemukan kombinasi terbaik.</div></li>
+                                    <li><div class="rec-num">3</div><div>Perkuat strategi <strong>Social Media</strong> dengan retargeting user yang sudah mengunjungi website tapi belum konversi.</div></li>
+                                    <li><div class="rec-num">4</div><div>Lakukan A/B Testing lanjutan dengan ukuran sampel &gt; 1.000 per grup untuk meningkatkan statistical power deteksi efek kecil.</div></li>
+                                    <li><div class="rec-num">5</div><div>Evaluasi ulang alokasi anggaran berdasarkan <strong>Cost per Conversion</strong>, bukan hanya Conversion Rate.</div></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional EDA Insights -->
+                    <div class="card">
+                        <div class="card-title">🔑 5 Insight Bisnis Utama dari EDA</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0;">
+                            <div style="padding:16px 20px; border-right:1px solid var(--color-border); border-bottom:1px solid var(--color-border);">
+                                <div style="font-size:12px;font-weight:700;color:#06b6d4;margin-bottom:6px;">INSIGHT 1 · CHANNEL PARITY</div>
+                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Semua channel memiliki conversion rate yang sangat serupa (86-89%), menunjukkan <strong style="color:var(--color-text-main)">tidak ada single best channel</strong>. Strategi multi-channel lebih efektif.</div>
+                            </div>
+                            <div style="padding:16px 20px; border-bottom:1px solid var(--color-border);">
+                                <div style="font-size:12px;font-weight:700;color:var(--color-accent-amber);margin-bottom:6px;">INSIGHT 2 · AD SPEND EFFICIENCY</div>
+                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Email Marketing memiliki <strong style="color:var(--color-text-main)">Ad Spend tertinggi</strong> (avg Rp 5.055K) namun conversion rate terendah kedua, mengindikasikan inefisiensi anggaran.</div>
+                            </div>
+                            <div style="padding:16px 20px; border-right:1px solid var(--color-border); border-bottom:1px solid var(--color-border);">
+                                <div style="font-size:12px;font-weight:700;color:#a855f7;margin-bottom:6px;">INSIGHT 3 · GENDER PARITY</div>
+                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Tidak ada perbedaan signifikan antara conversion rate Female vs Male, menunjukkan kampanye bersifat <strong style="color:var(--color-text-main)">gender-neutral</strong> dan tidak perlu segmentasi gender ketat.</div>
+                            </div>
+                            <div style="padding:16px 20px; border-bottom:1px solid var(--color-border);">
+                                <div style="font-size:12px;font-weight:700;color:var(--color-success);margin-bottom:6px;">INSIGHT 4 · ENGAGEMENT QUALITY</div>
+                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">PPC dan Social Media memiliki <strong style="color:var(--color-text-main)">Time on Site lebih tinggi</strong> (7.84 min) dibanding Referral (7.65 min), menunjukkan kualitas konten yang menarik.</div>
+                            </div>
+                            <div style="padding:16px 20px; border-right:1px solid var(--color-border);">
+                                <div style="font-size:12px;font-weight:700;color:var(--color-accent-amber);margin-bottom:6px;">INSIGHT 5 · PPC CTR UNGGUL</div>
+                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">PPC memiliki <strong style="color:var(--color-text-main)">CTR tertinggi</strong> (15.83%) dibanding Referral (15.17%), mengindikasikan konten iklan PPC lebih compelling dan relevan untuk audiens target.</div>
+                            </div>
+                            <div style="padding:16px 20px;">
+                                <div style="font-size:12px;font-weight:700;color:var(--color-danger);margin-bottom:6px;">BONUS · STATISTICAL FINDING</div>
+                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Dari hasil Z-Test (PPC vs Referral), p-value &gt; 0.05 artinya <strong style="color:var(--color-text-main)">perbedaan tidak signifikan secara statistik</strong>, sehingga keputusan channel harus didasarkan pada biaya, bukan hanya CR.</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- JS MODULES -->
+    <script src="data.js?v=4"></script>
+    <script src="app.js?v=4"></script>
+</body>
+</html>
