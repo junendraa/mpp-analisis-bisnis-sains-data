@@ -159,7 +159,7 @@ function renderOverview() {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: false, min: 85, max: 91, ticks: { callback: v => v + '%' } },
+                y: { beginAtZero: false, min: 85, ticks: { callback: v => v + '%' } },
                 x: { grid: { display: false } }
             }
         }
@@ -262,7 +262,7 @@ function renderOverview() {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: false, min: 85, max: 91, ticks: { callback: v => v + '%' } },
+                y: { beginAtZero: false, min: 85, ticks: { callback: v => v + '%' } },
                 x: { grid: { display: false } }
             }
         }
