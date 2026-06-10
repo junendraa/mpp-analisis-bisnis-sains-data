@@ -286,23 +286,25 @@
                             <span style="font-size:12px; color:var(--color-text-muted);" id="samplingTimestamp"></span>
                         </div>
                         <div class="grid-2">
-                            <div class="card">
+                            <div class="card" style="height: 380px; display: flex; flex-direction: column;">
                                 <div class="card-title">📋 Ringkasan Sampel per Grup</div>
-                                <table class="metrics-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Metrik</th>
-                                            <th>Grup A (Kontrol)</th>
-                                            <th>Grup B (Treatment)</th>
-                                            <th>Selisih</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="samplingTableBody"></tbody>
-                                </table>
+                                <div style="flex-grow: 1; overflow-y: auto; padding-right: 6px;" class="scroll-container">
+                                    <table class="metrics-table" style="margin: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>Metrik</th>
+                                                <th>Grup A (Kontrol)</th>
+                                                <th>Grup B (Treatment)</th>
+                                                <th>Selisih</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="samplingTableBody"></tbody>
+                                    </table>
+                                </div>
                             </div>
-                            <div class="card">
+                            <div class="card" style="height: 380px; display: flex; flex-direction: column;">
                                 <div class="card-title">📊 Perbandingan Conversion Rate</div>
-                                <div class="chart-wrap"><canvas id="chartSamplingCR"></canvas></div>
+                                <div class="chart-wrap" style="flex-grow: 1; height: 100%; position: relative; margin: 0;"><canvas id="chartSamplingCR"></canvas></div>
                             </div>
                         </div>
                         <div class="grid-2">
@@ -389,20 +391,20 @@
 
                         <!-- Bell Curve & CR Comparison side by side with Calculations -->
                         <div class="grid-2">
-                            <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; min-height: 570px;">
-                                <div>
-                                    <div class="card-title" style="margin-bottom:12px;">📈 Distribusi Normal & Z-Score</div>
-                                    <div class="chart-wrap-sm" style="margin-bottom:20px;"><canvas id="chartBellCurve"></canvas></div>
+                            <div class="card" style="display:flex; flex-direction:column; height: 580px;">
+                                <div style="flex: 1; display: flex; flex-direction: column; min-height: 0; margin-bottom: 16px;">
+                                    <div class="card-title" style="margin-bottom:8px;">📈 Distribusi Normal & Z-Score</div>
+                                    <div class="chart-wrap-sm" style="flex: 1; min-height: 180px; position: relative;"><canvas id="chartBellCurve"></canvas></div>
                                 </div>
-                                <div style="border-top:1px solid var(--color-border); padding-top:20px; margin-top:auto;">
-                                    <div class="card-title" style="margin-bottom:12px;">📊 Perbandingan Conversion Rate</div>
-                                    <div class="chart-wrap-sm"><canvas id="chartTestCR"></canvas></div>
+                                <div style="border-top:1px solid var(--color-border); padding-top:16px; flex: 1; display: flex; flex-direction: column; min-height: 0;">
+                                    <div class="card-title" style="margin-bottom:8px;">📊 Perbandingan Conversion Rate</div>
+                                    <div class="chart-wrap-sm" style="flex: 1; min-height: 180px; position: relative;"><canvas id="chartTestCR"></canvas></div>
                                 </div>
                             </div>
-                            <div class="card" style="min-height: 570px; display:flex; flex-direction:column;">
+                            <div class="card" style="height: 580px; display:flex; flex-direction:column;">
                                 <div class="card-title">🔢 Detail Perhitungan</div>
-                                <div style="flex-grow: 1; display:flex; flex-direction:column; justify-content:center;">
-                                    <table class="metrics-table" id="calcTable" style="margin: 0;">
+                                <div style="flex-grow: 1; overflow-y: auto; padding-right: 6px;" class="scroll-container">
+                                    <table class="metrics-table" id="calcTable" style="margin: 0; width: 100%;">
                                         <tbody></tbody>
                                     </table>
                                 </div>
