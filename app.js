@@ -736,37 +736,31 @@ function renderEDA() {
     // 3. Ad Spend Boxplot-style visualization
     const chLabels = CHANNELS.map(c => CHANNEL_LABELS[c]);
     mkChart('chartBoxSpend', {
-        type: 'bar',
+        type: 'boxplot',
         data: {
             labels: chLabels,
-            datasets: [
-                {
-                    label: 'IQR (Q1-Q3)',
-                    data: CHANNELS.map(c => {
-                        const s = D.adspend_by_channel[c];
-                        return [s.q1 / 1000, s.q3 / 1000];
-                    }),
-                    backgroundColor: CHANNELS.map(c => CHANNEL_COLORS_ALPHA(c, 0.4)),
-                    borderColor: CHANNELS.map(c => CHANNEL_COLORS[c]),
-                    borderWidth: 2, 
-                    borderRadius: 4,
-                },
-                {
-                    label: 'Median',
-                    data: CHANNELS.map(c => D.adspend_by_channel[c].median / 1000),
-                    type: 'line', 
-                    borderColor: '#f59e0b', 
-                    backgroundColor: 'rgba(245, 158, 11, 0.8)',
-                    borderWidth: 2, 
-                    pointRadius: 6, 
-                    pointBackgroundColor: '#f59e0b',
-                }
-            ]
+            datasets: [{
+                label: 'Ad Spend Distribution',
+                data: CHANNELS.map(c => {
+                    const s = D.adspend_by_channel[c];
+                    return {
+                        min: s.min / 1000,
+                        q1: s.q1 / 1000,
+                        median: s.median / 1000,
+                        q3: s.q3 / 1000,
+                        max: s.max / 1000
+                    };
+                }),
+                backgroundColor: CHANNELS.map(c => CHANNEL_COLORS_ALPHA(c, 0.4)),
+                borderColor: CHANNELS.map(c => CHANNEL_COLORS[c]),
+                borderWidth: 2,
+                itemRadius: 0 // Hide individual outlier points as we are passing aggregated stats
+            }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { labels: { boxWidth: 12, font: { size: 10 } } } },
+            plugins: { legend: { display: false } },
             scales: { y: { title: { display: true, text: 'Ad Spend (Ribu Rp)' } }, x: { grid: { display: false } } }
         }
     });
