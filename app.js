@@ -160,7 +160,7 @@ function renderOverview() {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: false, min: 85, max: 91, ticks: { callback: v => v + '%' } },
+                y: { beginAtZero: false, min: 85, ticks: { callback: v => v + '%' } },
                 x: { grid: { display: false } }
             }
         }
@@ -263,7 +263,7 @@ function renderOverview() {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: false, min: 85, max: 91, ticks: { callback: v => v + '%' } },
+                y: { beginAtZero: false, min: 85, ticks: { callback: v => v + '%' } },
                 x: { grid: { display: false } }
             }
         }
@@ -737,37 +737,31 @@ function renderEDA() {
     // 3. Ad Spend Boxplot-style visualization
     const chLabels = CHANNELS.map(c => CHANNEL_LABELS[c]);
     mkChart('chartBoxSpend', {
-        type: 'bar',
+        type: 'boxplot',
         data: {
             labels: chLabels,
-            datasets: [
-                {
-                    label: 'IQR (Q1-Q3)',
-                    data: CHANNELS.map(c => {
-                        const s = D.adspend_by_channel[c];
-                        return [s.q1 / 1000, s.q3 / 1000];
-                    }),
-                    backgroundColor: CHANNELS.map(c => CHANNEL_COLORS_ALPHA(c, 0.4)),
-                    borderColor: CHANNELS.map(c => CHANNEL_COLORS[c]),
-                    borderWidth: 2, 
-                    borderRadius: 4,
-                },
-                {
-                    label: 'Median',
-                    data: CHANNELS.map(c => D.adspend_by_channel[c].median / 1000),
-                    type: 'line', 
-                    borderColor: '#f59e0b', 
-                    backgroundColor: 'rgba(245, 158, 11, 0.8)',
-                    borderWidth: 2, 
-                    pointRadius: 6, 
-                    pointBackgroundColor: '#f59e0b',
-                }
-            ]
+            datasets: [{
+                label: 'Ad Spend Distribution',
+                data: CHANNELS.map(c => {
+                    const s = D.adspend_by_channel[c];
+                    return {
+                        min: s.min / 1000,
+                        q1: s.q1 / 1000,
+                        median: s.median / 1000,
+                        q3: s.q3 / 1000,
+                        max: s.max / 1000
+                    };
+                }),
+                backgroundColor: CHANNELS.map(c => CHANNEL_COLORS_ALPHA(c, 0.4)),
+                borderColor: CHANNELS.map(c => CHANNEL_COLORS[c]),
+                borderWidth: 2,
+                itemRadius: 0 // Hide individual outlier points as we are passing aggregated stats
+            }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { labels: { boxWidth: 12, font: { size: 10 } } } },
+            plugins: { legend: { display: false } },
             scales: { y: { title: { display: true, text: 'Ad Spend (Ribu Rp)' } }, x: { grid: { display: false } } }
         }
     });
@@ -898,14 +892,41 @@ function renderCorrHeatmap() {
     canvas.height = 400;
     
     const ctx = canvas.getContext('2d');
-    const cellW = canvas.width / n;
-    const cellH = canvas.height / n;
+    
+    const paddingLeft = 100;
+    const paddingBottom = 60;
+    const paddingTop = 10;
+    const paddingRight = 10;
+    
+    const gridW = canvas.width - paddingLeft - paddingRight;
+    const gridH = canvas.height - paddingTop - paddingBottom;
+    
+    const cellW = gridW / n;
+    const cellH = gridH / n;
+
+    // Find max absolute value (excluding 1) to normalize color scale
+    let maxV = 0.01;
+    for (let r of matrix) {
+        for (let c of r) {
+            if (Math.abs(c) < 0.99 && Math.abs(c) > maxV) {
+                maxV = Math.abs(c);
+            }
+        }
+    }
 
     function corrColor(v) {
+        if (Math.abs(v) > 0.99) {
+            return v > 0 ? '#3b82f6' : '#ef4444'; // Solid blue or red for 1.0 or -1.0
+        }
+        // Normalize intensity based on the maximum correlation found (excluding 1)
+        // This makes even small correlations like 0.02 visible.
+        const intensity = 0.15 + (Math.abs(v) / maxV) * 0.85;
         if (v > 0) { 
-            return `rgba(59, 130, 246, ${0.1 + v * 0.85})`; // Blue scale
-        } else { 
-            return `rgba(239, 68, 68, ${0.1 + Math.abs(v) * 0.85})`; // Red scale
+            return `rgba(59, 130, 246, ${intensity})`; // Blue scale
+        } else if (v < 0) { 
+            return `rgba(239, 68, 68, ${intensity})`; // Red scale
+        } else {
+            return `rgba(240, 244, 248, 0.5)`; // Neutral/Zero
         }
     }
 
@@ -915,35 +936,51 @@ function renderCorrHeatmap() {
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
             const v = matrix[i][j];
-            ctx.fillStyle = corrColor(v);
-            ctx.fillRect(j * cellW, i * cellH, cellW - 1, cellH - 1);
+            const x = paddingLeft + j * cellW;
+            const y = paddingTop + i * cellH;
             
-            // Text color logic: dark slate for light boxes, pure white for saturated boxes
-            ctx.fillStyle = Math.abs(v) > 0.4 ? '#ffffff' : '#475569';
+            ctx.fillStyle = corrColor(v);
+            ctx.fillRect(x, y, cellW - 1, cellH - 1);
+            
+            // Text color logic
+            const isDark = (Math.abs(v) > 0.99) || (Math.abs(v)/maxV > 0.5);
+            ctx.fillStyle = isDark ? '#ffffff' : '#475569';
             ctx.font = `bold ${Math.max(9, Math.min(11, cellW / 4.5))}px Inter`;
             ctx.textAlign = 'center'; 
             ctx.textBaseline = 'middle';
-            ctx.fillText(v.toFixed(2), j * cellW + cellW / 2, i * cellH + cellH / 2);
+            ctx.fillText(v.toFixed(2), x + cellW / 2, y + cellH / 2);
         }
     }
     
-    // Draw X-axis label captions
+    // Draw X-axis label captions (Bottom)
     ctx.fillStyle = '#475569';
-    ctx.font = `${Math.max(8, Math.min(10, cellW / 5.2))}px Inter`;
+    ctx.font = `${Math.max(10, Math.min(11, cellW / 4))}px Inter`;
     ctx.textAlign = 'center'; 
     ctx.textBaseline = 'top';
     labels.forEach((l, j) => {
         ctx.save(); 
-        ctx.translate(j * cellW + cellW / 2, canvas.height - 18);
-        ctx.fillText(l, 0, 0); 
+        const x = paddingLeft + j * cellW + cellW / 2;
+        const y = paddingTop + gridH + 8;
+        ctx.translate(x, y);
+        // Rotate text slightly if cell is too narrow
+        if (cellW < 40) {
+            ctx.rotate(-Math.PI / 4);
+            ctx.textAlign = 'right';
+            ctx.fillText(l, 0, 0); 
+        } else {
+            ctx.fillText(l, 0, 0); 
+        }
         ctx.restore();
     });
     
-    // Draw Y-axis label captions
+    // Draw Y-axis label captions (Left)
+    ctx.fillStyle = '#475569';
     ctx.textAlign = 'right'; 
     ctx.textBaseline = 'middle';
     labels.forEach((l, i) => {
-        ctx.fillText(l, cellW - 8, i * cellH + cellH / 2);
+        const x = paddingLeft - 8;
+        const y = paddingTop + i * cellH + cellH / 2;
+        ctx.fillText(l, x, y);
     });
 }
 
