@@ -386,24 +386,26 @@
                             </div>
                         </div>
 
-                        <!-- Bell Curve -->
+                        <!-- Bell Curve & CR Comparison side by side with Calculations -->
                         <div class="grid-2">
-                            <div class="card">
-                                <div class="card-title">📈 Distribusi Normal & Z-Score</div>
-                                <div class="chart-wrap"><canvas id="chartBellCurve"></canvas></div>
+                            <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; min-height: 570px;">
+                                <div>
+                                    <div class="card-title" style="margin-bottom:12px;">📈 Distribusi Normal & Z-Score</div>
+                                    <div class="chart-wrap-sm" style="margin-bottom:20px;"><canvas id="chartBellCurve"></canvas></div>
+                                </div>
+                                <div style="border-top:1px solid var(--color-border); padding-top:20px; margin-top:auto;">
+                                    <div class="card-title" style="margin-bottom:12px;">📊 Perbandingan Conversion Rate</div>
+                                    <div class="chart-wrap-sm"><canvas id="chartTestCR"></canvas></div>
+                                </div>
                             </div>
-                            <div class="card">
+                            <div class="card" style="min-height: 570px; display:flex; flex-direction:column;">
                                 <div class="card-title">🔢 Detail Perhitungan</div>
-                                <table class="metrics-table" id="calcTable">
-                                    <tbody></tbody>
-                                </table>
+                                <div style="flex-grow: 1; display:flex; flex-direction:column; justify-content:center;">
+                                    <table class="metrics-table" id="calcTable" style="margin: 0;">
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-
-                        <!-- CR Comparison -->
-                        <div class="card" style="margin-top:0;">
-                            <div class="card-title">📊 Perbandingan Conversion Rate Grup A vs Grup B</div>
-                            <div class="chart-wrap"><canvas id="chartTestCR"></canvas></div>
                         </div>
                     </div>
                 </section>
@@ -447,7 +449,6 @@
                         </div>
                     </div>
 
-                    <!-- Row 3 -->
                     <div class="grid-2">
                         <div class="card">
                             <div class="card-title">📈 Website Visits vs Time on Site per Channel</div>
@@ -467,122 +468,113 @@
                         <h2>Temuan analisis, interpretasi, proyeksi, dan rekomendasi strategis berbasis data</h2>
                     </div>
 
-                    <!-- Top metrics bar -->
-                    <div class="card" style="margin-bottom:24px; background:linear-gradient(135deg,rgba(59, 130, 246, 0.05),rgba(6, 182, 212, 0.05)); border-color:rgba(59, 130, 246, 0.15);">
-                        <div style="display:flex; gap:40px; flex-wrap:wrap; justify-content:space-around; text-align:center; padding:10px 0;">
+                    <div id="noSamplingWarningInsights" class="card" style="background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.3);margin-bottom:24px;">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <span style="font-size:20px;">⚠️</span>
                             <div>
-                                <div style="font-size:26px;font-weight:800;color:var(--color-accent-blue);">88.28%</div>
-                                <div style="font-size:12px;color:var(--color-text-muted);">Conversion Rate PPC</div>
+                                <div style="font-weight:700; margin-bottom:4px; color:var(--color-accent-amber);">Belum Ada Data Sampling</div>
+                                <div style="font-size:13px;color:var(--color-text-muted);">Silakan jalankan Random Sampling di halaman <strong style="color:var(--color-accent-amber)">A/B Setup</strong> terlebih dahulu sebelum melihat Business Insights & Rekomendasi.</div>
                             </div>
-                            <div>
-                                <div style="font-size:26px;font-weight:800;color:#a855f7;">88.31%</div>
-                                <div style="font-size:12px;color:var(--color-text-muted);">Conversion Rate Referral</div>
-                            </div>
-                            <div>
-                                <div style="font-size:26px;font-weight:800;color:var(--color-success);">87.65%</div>
-                                <div style="font-size:12px;color:var(--color-text-muted);">Overall Conversion Rate</div>
-                            </div>
-                            <div>
-                                <div style="font-size:26px;font-weight:800;color:var(--color-accent-amber);">Rp 40M</div>
-                                <div style="font-size:12px;color:var(--color-text-muted);">Total Ad Spend</div>
-                            </div>
-                            <div>
-                                <div style="font-size:26px;font-weight:800;color:#06b6d4;">15.48%</div>
-                                <div style="font-size:12px;color:var(--color-text-muted);">Avg Click-Through Rate</div>
-                            </div>
+                            <button class="btn btn-ghost" style="margin-left:auto;flex-shrink:0;" onclick="navigate('setup')">→ Ke A/B Setup</button>
                         </div>
                     </div>
 
-                    <!-- 4 Insight Quadrants -->
-                    <div class="insights-grid">
-                        <!-- What Happened -->
-                        <div class="insight-card happened">
-                            <div class="insight-eyebrow cyan"><div class="dot"></div>What Happened?</div>
-                            <div class="insight-title">Apa yang Ditemukan?</div>
-                            <div class="insight-body">
-                                Dari 8.000 user yang dianalisis, <strong>7.012 (87,65%)</strong> berhasil melakukan konversi.
-                                <br/><br/>
-                                Channel <strong>Referral (88.31%)</strong> dan <strong>PPC (88.28%)</strong> mencatat conversion rate tertinggi, sementara
-                                <strong>Social Media (86.83%)</strong> adalah yang terendah.
-                                <br/><br/>
-                                Uji statistik Z-Test menunjukkan bahwa perbedaan conversion rate antar channel sangat kecil dan
-                                <strong>tidak signifikan secara statistik</strong> (p-value &gt; 0.05), mengindikasikan semua channel memiliki performa setara.
+                    <div id="insightsContent" style="display:none;">
+                        <!-- Top metrics bar -->
+                        <div class="card" style="margin-bottom:24px; background:linear-gradient(135deg,rgba(59, 130, 246, 0.05),rgba(6, 182, 212, 0.05)); border-color:rgba(59, 130, 246, 0.15);">
+                            <div style="display:flex; gap:40px; flex-wrap:wrap; justify-content:space-around; text-align:center; padding:10px 0;">
+                                <div>
+                                    <div style="font-size:26px;font-weight:800;color:var(--color-accent-blue);" id="insight-val-a">88.28%</div>
+                                    <div style="font-size:12px;color:var(--color-text-muted);" id="insight-label-a">Conversion Rate PPC</div>
+                                </div>
+                                <div>
+                                    <div style="font-size:26px;font-weight:800;color:#a855f7;" id="insight-val-b">88.31%</div>
+                                    <div style="font-size:12px;color:var(--color-text-muted);" id="insight-label-b">Conversion Rate Referral</div>
+                                </div>
+                                <div>
+                                    <div style="font-size:26px;font-weight:800;color:var(--color-success);" id="insight-val-overall-cr">87.65%</div>
+                                    <div style="font-size:12px;color:var(--color-text-muted);">Overall Conversion Rate</div>
+                                </div>
+                                <div>
+                                    <div style="font-size:26px;font-weight:800;color:var(--color-accent-amber);" id="insight-val-overall-spend">Rp 40M</div>
+                                    <div style="font-size:12px;color:var(--color-text-muted);">Total Ad Spend</div>
+                                </div>
+                                <div>
+                                    <div style="font-size:26px;font-weight:800;color:#06b6d4;" id="insight-val-overall-ctr">15.48%</div>
+                                    <div style="font-size:12px;color:var(--color-text-muted);">Avg Click-Through Rate</div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Why -->
-                        <div class="insight-card why">
-                            <div class="insight-eyebrow yellow"><div class="dot"></div>Why Did It Happen?</div>
-                            <div class="insight-title">Mengapa Hal Ini Terjadi?</div>
-                            <div class="insight-body">
-                                <strong>Channel Referral</strong> unggul karena user yang datang via rekomendasi teman atau kolega sudah memiliki
-                                <em>social trust</em> yang lebih tinggi, sehingga barrier untuk konversi lebih rendah.
-                                <br/><br/>
-                                <strong>PPC</strong> memiliki performa tinggi karena targeting iklan yang tepat sasaran — user yang melihat iklan sudah memiliki
-                                <em>purchase intent</em> yang jelas.
-                                <br/><br/>
-                                <strong>Social Media</strong> sedikit lebih rendah karena audiensnya lebih luas dan tidak selalu berada dalam fase pembelian.
-                                Konten bersifat awareness, bukan langsung konversi.
+                        <!-- 4 Insight Quadrants -->
+                        <div class="insights-grid">
+                            <!-- What Happened -->
+                            <div class="insight-card happened">
+                                <div class="insight-eyebrow cyan"><div class="dot"></div>What Happened?</div>
+                                <div class="insight-title">Apa yang Ditemukan?</div>
+                                <div class="insight-body" id="insight-what-happened">
+                                    Memuat data temuan...
+                                </div>
+                            </div>
+
+                            <!-- Why -->
+                            <div class="insight-card why">
+                                <div class="insight-eyebrow yellow"><div class="dot"></div>Why Did It Happen?</div>
+                                <div class="insight-title">Mengapa Hal Ini Terjadi?</div>
+                                <div class="insight-body" id="insight-why">
+                                    Memuat analisis...
+                                </div>
+                            </div>
+
+                            <!-- What Will Happen -->
+                            <div class="insight-card predict">
+                                <div class="insight-eyebrow purple"><div class="dot"></div>What Will Happen?</div>
+                                <div class="insight-title">Prediksi ke Depan</div>
+                                <div class="insight-body" id="insight-predict">
+                                    Memuat prediksi...
+                                </div>
+                            </div>
+
+                            <!-- Recommendation -->
+                            <div class="insight-card recommend">
+                                <div class="insight-eyebrow green"><div class="dot"></div>What Should Be Done?</div>
+                                <div class="insight-title">Rekomendasi Bisnis</div>
+                                <div class="insight-body" id="insight-recommend">
+                                    Memuat rekomendasi...
+                                </div>
                             </div>
                         </div>
 
-                        <!-- What Will Happen -->
-                        <div class="insight-card predict">
-                            <div class="insight-eyebrow purple"><div class="dot"></div>What Will Happen?</div>
-                            <div class="insight-title">Prediksi ke Depan</div>
-                            <div class="insight-body">
-                                Berdasarkan tren data historis dan pola yang ada:
-                                <br/><br/>
-                                • <strong>Referral</strong> akan terus menjadi channel dengan ROI terbaik jika program insentif referral diperkuat.<br/>
-                                • <strong>PPC</strong> akan tetap efektif namun biaya per konversi berpotensi meningkat seiring naiknya kompetisi iklan.<br/>
-                                • <strong>Social Media</strong> memiliki potensi besar jika dikombinasikan dengan konten <em>retargeting</em> dan <em>lookalike audience</em>.<br/>
-                                • Jika anggaran dipindahkan dari Email ke Referral, prediksi peningkatan conversion rate sebesar <strong>1.3-2.5%</strong>.
-                            </div>
-                        </div>
-
-                        <!-- Recommendation -->
-                        <div class="insight-card recommend">
-                            <div class="insight-eyebrow green"><div class="dot"></div>What Should Be Done?</div>
-                            <div class="insight-title">Rekomendasi Bisnis</div>
-                            <div class="insight-body">
-                                <ul class="rec-list">
-                                    <li><div class="rec-num">1</div><div>Tingkatkan anggaran channel <strong>Referral</strong> — buat program reward/insentif untuk user yang berhasil mengajak teman.</div></li>
-                                    <li><div class="rec-num">2</div><div>Optimalkan kampanye <strong>PPC</strong> dengan A/B testing pada variasi copy iklan dan landing page untuk menemukan kombinasi terbaik.</div></li>
-                                    <li><div class="rec-num">3</div><div>Perkuat strategi <strong>Social Media</strong> dengan retargeting user yang sudah mengunjungi website tapi belum konversi.</div></li>
-                                    <li><div class="rec-num">4</div><div>Lakukan A/B Testing lanjutan dengan ukuran sampel &gt; 1.000 per grup untuk meningkatkan statistical power deteksi efek kecil.</div></li>
-                                    <li><div class="rec-num">5</div><div>Evaluasi ulang alokasi anggaran berdasarkan <strong>Cost per Conversion</strong>, bukan hanya Conversion Rate.</div></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Additional EDA Insights -->
-                    <div class="card">
-                        <div class="card-title">🔑 5 Insight Bisnis Utama dari EDA</div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0;">
-                            <div style="padding:16px 20px; border-right:1px solid var(--color-border); border-bottom:1px solid var(--color-border);">
-                                <div style="font-size:12px;font-weight:700;color:#06b6d4;margin-bottom:6px;">INSIGHT 1 · CHANNEL PARITY</div>
-                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Semua channel memiliki conversion rate yang sangat serupa (86-89%), menunjukkan <strong style="color:var(--color-text-main)">tidak ada single best channel</strong>. Strategi multi-channel lebih efektif.</div>
-                            </div>
-                            <div style="padding:16px 20px; border-bottom:1px solid var(--color-border);">
-                                <div style="font-size:12px;font-weight:700;color:var(--color-accent-amber);margin-bottom:6px;">INSIGHT 2 · AD SPEND EFFICIENCY</div>
-                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Email Marketing memiliki <strong style="color:var(--color-text-main)">Ad Spend tertinggi</strong> (avg Rp 5.055K) namun conversion rate terendah kedua, mengindikasikan inefisiensi anggaran.</div>
-                            </div>
-                            <div style="padding:16px 20px; border-right:1px solid var(--color-border); border-bottom:1px solid var(--color-border);">
-                                <div style="font-size:12px;font-weight:700;color:#a855f7;margin-bottom:6px;">INSIGHT 3 · GENDER PARITY</div>
-                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Tidak ada perbedaan signifikan antara conversion rate Female vs Male, menunjukkan kampanye bersifat <strong style="color:var(--color-text-main)">gender-neutral</strong> dan tidak perlu segmentasi gender ketat.</div>
-                            </div>
-                            <div style="padding:16px 20px; border-bottom:1px solid var(--color-border);">
-                                <div style="font-size:12px;font-weight:700;color:var(--color-success);margin-bottom:6px;">INSIGHT 4 · ENGAGEMENT QUALITY</div>
-                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">PPC dan Social Media memiliki <strong style="color:var(--color-text-main)">Time on Site lebih tinggi</strong> (7.84 min) dibanding Referral (7.65 min), menunjukkan kualitas konten yang menarik.</div>
-                            </div>
-                            <div style="padding:16px 20px; border-right:1px solid var(--color-border);">
-                                <div style="font-size:12px;font-weight:700;color:var(--color-accent-amber);margin-bottom:6px;">INSIGHT 5 · PPC CTR UNGGUL</div>
-                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">PPC memiliki <strong style="color:var(--color-text-main)">CTR tertinggi</strong> (15.83%) dibanding Referral (15.17%), mengindikasikan konten iklan PPC lebih compelling dan relevan untuk audiens target.</div>
-                            </div>
-                            <div style="padding:16px 20px;">
-                                <div style="font-size:12px;font-weight:700;color:var(--color-danger);margin-bottom:6px;">BONUS · STATISTICAL FINDING</div>
-                                <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Dari hasil Z-Test (PPC vs Referral), p-value &gt; 0.05 artinya <strong style="color:var(--color-text-main)">perbedaan tidak signifikan secara statistik</strong>, sehingga keputusan channel harus didasarkan pada biaya, bukan hanya CR.</div>
+                        <!-- Additional EDA Insights -->
+                        <div class="card">
+                            <div class="card-title">🔑 5 Insight Bisnis Utama dari EDA</div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0;">
+                                <div style="padding:16px 20px; border-right:1px solid var(--color-border); border-bottom:1px solid var(--color-border);">
+                                    <div style="font-size:12px;font-weight:700;color:#06b6d4;margin-bottom:6px;">INSIGHT 1 · CHANNEL PARITY</div>
+                                    <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Semua channel memiliki conversion rate yang sangat serupa (86-89%), menunjukkan <strong style="color:var(--color-text-main)">tidak ada single best channel</strong>. Strategi multi-channel lebih efektif.</div>
+                                </div>
+                                <div style="padding:16px 20px; border-bottom:1px solid var(--color-border);">
+                                    <div style="font-size:12px;font-weight:700;color:var(--color-accent-amber);margin-bottom:6px;">INSIGHT 2 · AD SPEND EFFICIENCY</div>
+                                    <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Email Marketing memiliki <strong style="color:var(--color-text-main)">Ad Spend tertinggi</strong> (avg Rp 5.055K) namun conversion rate terendah kedua, mengindikasikan inefisiensi anggaran.</div>
+                                </div>
+                                <div style="padding:16px 20px; border-right:1px solid var(--color-border); border-bottom:1px solid var(--color-border);">
+                                    <div style="font-size:12px;font-weight:700;color:#a855f7;margin-bottom:6px;">INSIGHT 3 · GENDER PARITY</div>
+                                    <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Tidak ada perbedaan signifikan antara conversion rate Female vs Male, menunjukkan kampanye bersifat <strong style="color:var(--color-text-main)">gender-neutral</strong> dan tidak perlu segmentasi gender ketat.</div>
+                                </div>
+                                <div style="padding:16px 20px; border-bottom:1px solid var(--color-border);">
+                                    <div style="font-size:12px;font-weight:700;color:var(--color-success);margin-bottom:6px;">INSIGHT 4 · ENGAGEMENT QUALITY</div>
+                                    <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">PPC dan Social Media memiliki <strong style="color:var(--color-text-main)">Time on Site lebih tinggi</strong> (7.84 min) dibanding Referral (7.65 min), menunjukkan kualitas konten yang menarik.</div>
+                                </div>
+                                <div style="padding:16px 20px; border-right:1px solid var(--color-border);">
+                                    <div style="font-size:12px;font-weight:700;color:var(--color-accent-amber);margin-bottom:6px;">INSIGHT 5 · PPC CTR UNGGUL</div>
+                                    <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">PPC memiliki <strong style="color:var(--color-text-main)">CTR tertinggi</strong> (15.83%) dibanding Referral (15.17%), mengindikasikan konten iklan PPC lebih compelling dan relevan untuk audiens target.</div>
+                                </div>
+                                <div style="padding:16px 20px;">
+                                    <div style="font-size:12px;font-weight:700;color:var(--color-danger);margin-bottom:6px;">BONUS · STATISTICAL FINDING</div>
+                                    <div style="font-size:13px;color:var(--color-text-muted);line-height:1.6;" id="insight-bonus-text">
+                                        Memuat kesimpulan uji signifikansi...
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

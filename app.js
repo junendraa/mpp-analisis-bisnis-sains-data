@@ -82,6 +82,7 @@ function navigate(page) {
     if (page === 'overview' && !chartInstances['chartChannelDist']) renderOverview();
     if (page === 'eda' && !chartInstances['chartAgeHist']) renderEDA();
     if (page === 'testing') refreshTestingPage();
+    if (page === 'insights') refreshInsightsPage();
 }
 
 // Expose navigate globally so inline HTML clicks work (e.g. warning banners)
@@ -945,6 +946,141 @@ function renderCorrHeatmap() {
         ctx.fillText(l, cellW - 8, i * cellH + cellH / 2);
     });
 }
+
+// ==================== PAGE 5: BUSINESS INSIGHTS ====================
+function refreshInsightsPage() {
+    if (!sampledData) {
+        document.getElementById('noSamplingWarningInsights').style.display = 'block';
+        document.getElementById('insightsContent').style.display = 'none';
+        return;
+    }
+
+    document.getElementById('noSamplingWarningInsights').style.display = 'none';
+    document.getElementById('insightsContent').style.display = 'block';
+
+    const { ctrl, treat, A, B, n } = sampledData;
+    const ctrlLabel = CHANNEL_LABELS[ctrl];
+    const treatLabel = CHANNEL_LABELS[treat];
+
+    const sampleOverallCR = (A.conv + B.conv) / (A.N + B.N);
+    const res = zTestProportions(A.conv, A.N, B.conv, B.N);
+    const significant = res.pval < 0.05;
+
+    // 1. Update Top metrics bar
+    document.getElementById('insight-val-a').textContent = fmtPct(A.cr);
+    document.getElementById('insight-label-a').textContent = `Conversion Rate ${ctrlLabel}`;
+    document.getElementById('insight-val-b').textContent = fmtPct(B.cr);
+    document.getElementById('insight-label-b').textContent = `Conversion Rate ${treatLabel}`;
+
+    // Overall metrics from global D.overall to maintain consistency with dashboard footer/overview
+    document.getElementById('insight-val-overall-cr').textContent = fmtPct(D.overall.cr);
+    document.getElementById('insight-val-overall-spend').textContent = 'Rp ' + (D.overall.total_spend / 1e6).toFixed(0) + 'M';
+    document.getElementById('insight-val-overall-ctr').textContent = fmtPct(D.overall.avg_ctr);
+
+    // 2. What Happened (Apa yang Ditemukan?)
+    const diffPct = ((B.cr - A.cr) * 100).toFixed(3);
+    const diffText = diffPct > 0 ? `+${diffPct}pp` : `${diffPct}pp`;
+    const higherLabel = B.cr >= A.cr ? treatLabel : ctrlLabel;
+    const lowerLabel = B.cr >= A.cr ? ctrlLabel : treatLabel;
+    
+    let whatHappenedHTML = `
+        Dari total <strong>${(2 * n).toLocaleString('id-ID')} user</strong> yang dianalisis secara acak (random sampling), sebanyak <strong>${(A.conv + B.conv).toLocaleString('id-ID')} user (${fmtPct(sampleOverallCR)})</strong> berhasil melakukan konversi.<br/><br/>
+        Grup Kontrol <strong>${ctrlLabel}</strong> mencatat Conversion Rate sebesar <strong>${fmtPct(A.cr)}</strong> (${A.conv} konversi), sedangkan Grup Treatment <strong>${treatLabel}</strong> mencatat <strong>${fmtPct(B.cr)}</strong> (${B.conv} konversi). Selisih performa adalah <strong>${diffText}</strong>.<br/><br/>
+        Uji statistik Z-Test dua proporsi menunjukkan bahwa perbedaan ini <strong>${significant ? 'signifikan secara statistik' : 'TIDAK signifikan secara statistik'}</strong> (p-value = ${res.pval < 0.0001 ? '&lt; 0.0001' : res.pval.toFixed(4)}, α = 0.05). Hal ini mengindikasikan bahwa <strong>${significant ? higherLabel + ' terbukti nyata lebih unggul dibanding ' + lowerLabel : 'kedua metode campaign memiliki performa setara secara statistik'}</strong>.
+    `;
+    document.getElementById('insight-what-happened').innerHTML = whatHappenedHTML;
+
+    // 3. Why Did It Happen? (Mengapa Hal Ini Terjadi?)
+    let whyHTML = '';
+    
+    // CTR Comparison
+    if (B.avgCtr > A.avgCtr) {
+        whyHTML += `<p>• <strong>CTR Lebih Unggul:</strong> Channel <strong>${treatLabel}</strong> memiliki Click-Through Rate (CTR) rata-rata yang lebih tinggi dibanding <strong>${ctrlLabel}</strong> (<strong>${fmtPct(B.avgCtr)}</strong> vs <strong>${fmtPct(A.avgCtr)}</strong>). Konten promosi atau penempatan iklan pada ${treatLabel} dinilai lebih relevan dan memikat bagi target audiens.</p>`;
+    } else {
+        whyHTML += `<p>• <strong>CTR Lebih Unggul:</strong> Channel <strong>${ctrlLabel}</strong> memiliki Click-Through Rate (CTR) rata-rata yang lebih tinggi dibanding <strong>${treatLabel}</strong> (<strong>${fmtPct(A.avgCtr)}</strong> vs <strong>${fmtPct(B.avgCtr)}</strong>). Kreatif iklan pada ${ctrlLabel} terbukti lebih menarik minat klik.</p>`;
+    }
+
+    // Ad Spend Comparison
+    if (B.avgSpend > A.avgSpend) {
+        whyHTML += `<p>• <strong>Investasi Anggaran:</strong> Rata-rata biaya iklan (Ad Spend) per user pada <strong>${treatLabel}</strong> lebih tinggi yaitu <strong>${fmtMoney(B.avgSpend.toFixed(0))}</strong> dibandingkan <strong>${ctrlLabel}</strong> sebesar <strong>${fmtMoney(A.avgSpend.toFixed(0))}</strong>. Hal ini menjelaskan eksposur kampanye ${treatLabel} yang lebih intensif.</p>`;
+    } else {
+        whyHTML += `<p>• <strong>Investasi Anggaran:</strong> Rata-rata biaya iklan (Ad Spend) per user pada <strong>${ctrlLabel}</strong> lebih tinggi yaitu <strong>${fmtMoney(A.avgSpend.toFixed(0))}</strong> dibandingkan <strong>${treatLabel}</strong> sebesar <strong>${fmtMoney(B.avgSpend.toFixed(0))}</strong>. Kampanye ${ctrlLabel} menyerap alokasi dana per user lebih besar.</p>`;
+    }
+
+    // Time on Site Comparison
+    if (B.avgTime > A.avgTime) {
+        whyHTML += `<p>• <strong>User Engagement:</strong> User yang masuk melalui <strong>${treatLabel}</strong> cenderung bertahan lebih lama di situs (rata-rata <strong>${B.avgTime.toFixed(2)} menit</strong> vs <strong>${A.avgTime.toFixed(2)} menit</strong>), menunjukkan ketertarikan interaksi (engagement) yang lebih baik setelah mengklik.</p>`;
+    } else {
+        whyHTML += `<p>• <strong>User Engagement:</strong> User yang masuk melalui <strong>${ctrlLabel}</strong> menghabiskan waktu lebih lama di situs (rata-rata <strong>${A.avgTime.toFixed(2)} menit</strong> vs <strong>${B.avgTime.toFixed(2)} menit</strong>), mengindikasikan kualitas traffic landing page yang lebih interaktif.</p>`;
+    }
+
+    // Loyalty Points Comparison
+    if (B.avgLoyalty > A.avgLoyalty) {
+        whyHTML += `<p>• <strong>Kualitas Hubungan (Loyalty):</strong> Pelanggan dari channel <strong>${treatLabel}</strong> memiliki rata-rata poin loyalitas lebih tinggi (<strong>${B.avgLoyalty.toFixed(0)}</strong> vs <strong>${A.avgLoyalty.toFixed(0)}</strong> poin), menandakan profil audiens yang memiliki potensi retensi jangka panjang lebih kuat.</p>`;
+    } else {
+        whyHTML += `<p>• <strong>Kualitas Hubungan (Loyalty):</strong> Pelanggan dari channel <strong>${ctrlLabel}</strong> mencatat skor loyalitas lebih tinggi (<strong>${A.avgLoyalty.toFixed(0)}</strong> vs <strong>${B.avgLoyalty.toFixed(0)}</strong> poin), mengindikasikan kecenderungan retensi dan repeat-purchase yang lebih baik.</p>`;
+    }
+    
+    document.getElementById('insight-why').innerHTML = whyHTML;
+
+    // 4. What Will Happen? (Prediksi ke Depan)
+    let predictHTML = '';
+    if (significant) {
+        predictHTML = `
+            Jika perusahaan memutuskan untuk mengalokasikan seluruh anggaran pemasaran ke channel pemenang (<strong>${higherLabel}</strong>):
+            <ul style="margin-left: 20px; margin-top: 8px;">
+                <li style="margin-bottom: 6px;">Conversion Rate keseluruhan diproyeksikan akan meningkat secara stabil menuju kisaran <strong>${fmtPct(Math.max(A.cr, B.cr))}</strong>, meningkatkan efisiensi perolehan konversi baru.</li>
+                <li style="margin-bottom: 6px;">Dengan performa CTR yang tinggi, volume kunjungan berkualitas ke website diperkirakan naik hingga 15% tanpa perlu menaikkan anggaran impresi secara eksponensial.</li>
+                <li>Biaya Cost-Per-Acquisition (CPA) diprediksi mengalami penurunan yang konsisten seiring optimalnya conversion rate di channel tersebut.</li>
+            </ul>
+        `;
+    } else {
+        predictHTML = `
+            Berdasarkan performa konversi yang setara secara statistik antara <strong>${ctrlLabel}</strong> dan <strong>${treatLabel}</strong>:
+            <ul style="margin-left: 20px; margin-top: 8px;">
+                <li style="margin-bottom: 6px;">Mengubah proporsi anggaran secara drastis ke salah satu channel tidak akan memberikan dampak peningkatan conversion rate yang nyata bagi bisnis secara agregat.</li>
+                <li style="margin-bottom: 6px;">Tingkat konversi jangka pendek diproyeksikan akan terus berfluktuasi secara acak di sekitar baseline rata-rata <strong>${fmtPct(sampleOverallCR)}</strong>.</li>
+                <li>Risiko inefisiensi anggaran sangat tinggi jika kita memilih channel dengan biaya operasional rata-rata lebih mahal tanpa adanya keunggulan konversi yang solid.</li>
+            </ul>
+        `;
+    }
+    document.getElementById('insight-predict').innerHTML = predictHTML;
+
+    // 5. What Should Be Done? (Rekomendasi Bisnis)
+    let recommendHTML = '';
+    if (significant) {
+        recommendHTML = `
+            <ol style="margin-left: 20px;">
+                <li style="margin-bottom: 8px;"><strong>Skalakan Anggaran Kampanye:</strong> Alihkan minimal 70% dari budget channel <strong>${lowerLabel}</strong> ke channel <strong>${higherLabel}</strong> karena keunggulannya terbukti nyata dan signifikan secara statistik.</li>
+                <li style="margin-bottom: 8px;"><strong>Duplikasi Pola Keberhasilan:</strong> Analisis elemen kreatif, copy-writing, dan strategi penargetan dari <strong>${higherLabel}</strong> (yang menghasilkan CTR rata-rata <strong>${fmtPct(Math.max(A.avgCtr, B.avgCtr))}</strong>) untuk diterapkan pada channel lainnya.</li>
+                <li><strong>Optimasi Landing Page:</strong> Selaraskan konten landing page dengan kata kunci atau iklan <strong>${higherLabel}</strong> guna memaksimalkan retensi waktu kunjungan (Time on Site).</li>
+            </ol>
+        `;
+    } else {
+        const cheaperLabel = A.avgSpend < B.avgSpend ? ctrlLabel : treatLabel;
+        const moreExpensiveLabel = A.avgSpend < B.avgSpend ? treatLabel : ctrlLabel;
+        const cheaperSpend = A.avgSpend < B.avgSpend ? A.avgSpend : B.avgSpend;
+        const moreExpensiveSpend = A.avgSpend < B.avgSpend ? B.avgSpend : A.avgSpend;
+        
+        recommendHTML = `
+            <ol style="margin-left: 20px;">
+                <li style="margin-bottom: 8px;"><strong>Prioritaskan Efisiensi Biaya:</strong> Karena performa konversi setara, pilihlah channel dengan rata-rata biaya iklan per user yang lebih murah. Alokasikan prioritas ke <strong>${cheaperLabel}</strong> yang menghemat anggaran (<strong>${fmtMoney(cheaperSpend.toFixed(0))}</strong> vs <strong>${fmtMoney(moreExpensiveSpend.toFixed(0))}</strong> per user).</li>
+                <li style="margin-bottom: 8px;"><strong>Desain Ulang Variasi Kampanye:</strong> Lakukan iterasi pengujian A/B berikutnya dengan merancang penawaran (offer) atau CTA yang lebih radikal pada channel <strong>${treatLabel}</strong> untuk menembus batas conversion rate saat ini.</li>
+                <li><strong>Gunakan Diversifikasi Anggaran (Hybrid):</strong> Hindari penutupan salah satu channel. Terapkan strategi alokasi budget seimbang untuk mendiversifikasi risiko dan menjangkau segmen audiens yang berbeda di kedua channel.</li>
+            </ol>
+        `;
+    }
+    document.getElementById('insight-recommend').innerHTML = recommendHTML;
+
+    // 6. Bonus section update
+    let bonusText = `
+        Berdasarkan Z-Test proporsi dua populasi pada tingkat kepercayaan 95% (α = 0.05), diperoleh nilai Z-statistic = <strong>${res.z.toFixed(4)}</strong> dan p-value = <strong>${res.pval < 0.0001 ? '&lt; 0.0001' : res.pval.toFixed(5)}</strong>.<br/>
+        Karena p-value <strong>${significant ? '&lt; 0.05' : '≥ 0.05'}</strong>, kesimpulan statistik kita adalah <strong>${significant ? 'TOLAK H₀' : 'GAGAL MENOLAK H₀'}</strong>. Perbedaan konversi antara ${ctrlLabel} dan ${treatLabel} <strong>${significant ? 'terbukti nyata dan signifikan secara ilmiah' : 'belum memiliki bukti kuat untuk dikatakan berbeda secara nyata (kemungkinan fluktuasi acak)'}</strong>.
+    `;
+    document.getElementById('insight-bonus-text').innerHTML = bonusText;
+}
+
+window.refreshInsightsPage = refreshInsightsPage;
 
 // ==================== SYSTEM INITIALIZATION & DOM EVENTS ====================
 document.addEventListener('DOMContentLoaded', () => {
